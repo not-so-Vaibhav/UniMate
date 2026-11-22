@@ -3,7 +3,6 @@ import LandingNav from './components/LandingNav';
 import HeroSection from './components/HeroSection';
 import ServicesSection from './components/ServicesSection';
 import HowItWorksSection from './components/HowItWorksSection';
-import ShowcaseSection from './components/ShowcaseSection';
 import ArchitectureSection from './components/ArchitectureSection';
 import CtaSection from './components/CtaSection';
 import LandingFooter from './components/LandingFooter';
@@ -14,12 +13,11 @@ export default function LandingPage() {
       {/* Top Sticky Navigation */}
       <LandingNav />
 
-      {/* Main Content Sections */}
+      {/* Main Single-Page Unified Sections */}
       <main>
         <HeroSection />
         <ServicesSection />
         <HowItWorksSection />
-        <ShowcaseSection />
         <ArchitectureSection />
         <CtaSection />
       </main>
