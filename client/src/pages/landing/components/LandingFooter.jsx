@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShieldCheck, Heart } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 
 export default function LandingFooter() {
   const currentYear = new Date().getFullYear();
@@ -8,28 +8,24 @@ export default function LandingFooter() {
   const handleAnchorClick = (e, href) => {
     if (href.startsWith('#')) {
       e.preventDefault();
-      if (href === '#') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-        const el = document.querySelector(href);
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth' });
-        }
+      const el = document.querySelector(href);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
       }
     }
   };
 
   return (
-    <footer className="bg-surface border-t border-slate-border text-xs text-slate-text">
+    <footer className="bg-white border-t border-slate-200 text-xs text-slate-text">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
           {/* Brand Col */}
           <div className="md:col-span-1 space-y-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-lg bg-navy-800 text-white font-bold text-xs flex items-center justify-center shadow-xs">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-xl bg-navy-800 text-white font-bold text-sm flex items-center justify-center shadow-xs">
                 U
               </div>
-              <span className="font-semibold text-base tracking-tight text-navy-950">UniMate</span>
+              <span className="font-bold text-base tracking-tight text-navy-950">UniMate</span>
             </div>
             <p className="text-xs text-slate-text leading-relaxed">
               Integrated smart-campus platform consolidating everyday campus services into one dependable experience.
@@ -46,11 +42,6 @@ export default function LandingFooter() {
               Platform
             </h4>
             <ul className="space-y-2">
-              <li>
-                <a href="#" onClick={(e) => handleAnchorClick(e, '#')} className="hover:text-navy-950 transition-colors">
-                  Home
-                </a>
-              </li>
               <li>
                 <a href="#services" onClick={(e) => handleAnchorClick(e, '#services')} className="hover:text-navy-950 transition-colors">
                   Campus Services
@@ -139,7 +130,7 @@ export default function LandingFooter() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-slate-border flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-text">
+        <div className="pt-8 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-text">
           <p>© {currentYear} UniMate Campus Platform. Built on verified university specifications.</p>
           <div className="flex items-center gap-4">
             <span>MySQL 9.5 Verified</span>

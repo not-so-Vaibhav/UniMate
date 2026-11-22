@@ -1,78 +1,81 @@
 import React from 'react';
-import Badge from '../../../components/common/Badge';
 import { UserCheck, Compass, LayoutDashboard, ArrowRight } from 'lucide-react';
 
 const STEPS = [
   {
     step: '01',
-    title: 'Discover UniMate',
+    title: 'Authenticate Once',
     description:
-      'Sign in or register with your campus student credentials. One authenticated profile provides least-privilege access across all five campus services.',
+      'Sign in with your verified campus student or operator credentials. One account unlocks every service with least-privilege security.',
+    detail: 'Zero repetitive logins across fragmented departmental portals.',
     icon: UserCheck,
-    detail: 'Zero repetitive logins across different departmental service portals.',
   },
   {
     step: '02',
-    title: 'Access the Services',
+    title: 'Access Campus Services',
     description:
-      'Browse daily canteen menus, check printing counter parameters, locate academic lecture blocks, or register misplaced belongings from a unified navigation rail.',
+      'Browse live canteen menus, check printing counter parameters, locate academic lecture blocks, or report lost belongings.',
+    detail: 'Transparent schedules, live pricing in INR (₹), and verified locations.',
     icon: Compass,
-    detail: 'Every service presents verified schedules, locations, and pricing transparency.',
   },
   {
     step: '03',
-    title: 'Manage in One Place',
+    title: 'Track in Real-Time',
     description:
-      'Track your orders, view submitted requests, and review query history on your personalized dashboard without visiting physical counters for basic updates.',
+      'Monitor your food orders, track print fulfillment, and review AI queries on your dashboard without waiting in physical queues.',
+    detail: 'Real-time status updates from order creation through final pickup.',
     icon: LayoutDashboard,
-    detail: 'Clear request statuses and real-time counter updates throughout the semester.',
   },
 ];
 
 export default function HowItWorksSection() {
   return (
-    <section id="how-it-works" className="py-20 sm:py-28 bg-background border-t border-slate-border">
+    <section id="how-it-works" className="py-20 sm:py-28 bg-background border-t border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
+        {/* Section Header - Clean typography, NO generic pill badges */}
         <div className="max-w-3xl mx-auto text-center mb-16">
-          <Badge variant="neutral" className="text-xs py-1 px-3 mb-3">
-            User Journey
-          </Badge>
-          <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-navy-950 mb-3">
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+              User Experience
+            </span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-navy-950 mb-4">
             How UniMate Works
           </h2>
-          <p className="text-sm sm:text-base text-slate-text leading-relaxed">
-            A structured, frictionless process for navigating everyday campus life.
+          <p className="text-base text-slate-text leading-relaxed">
+            A structured, frictionless process designed for everyday campus life.
           </p>
         </div>
 
-        {/* Steps Grid */}
+        {/* Connected Horizontal Steps Layout */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
           {STEPS.map((item, index) => {
             const Icon = item.icon;
             return (
               <div
                 key={item.step}
-                className="relative bg-surface border border-slate-border rounded-xl p-7 flex flex-col justify-between shadow-2xs hover:border-navy-300 transition-colors"
+                className="relative bg-white border border-slate-200 rounded-2xl p-7 sm:p-8 flex flex-col justify-between shadow-xs hover:border-navy-300 transition-all duration-200"
               >
                 <div>
-                  {/* Step Number & Icon */}
+                  {/* Step Header */}
                   <div className="flex items-center justify-between mb-6">
-                    <span className="text-2xl font-bold font-mono text-navy-800">
+                    <span className="text-3xl font-extrabold font-mono text-navy-800 tracking-tight">
                       {item.step}
                     </span>
-                    <div className="w-10 h-10 rounded-lg bg-surface-muted text-navy-800 flex items-center justify-center border border-slate-border">
+                    <div className="w-11 h-11 rounded-xl bg-slate-50 text-navy-800 flex items-center justify-center border border-slate-200">
                       <Icon className="w-5 h-5" />
                     </div>
                   </div>
 
-                  <h3 className="text-base font-semibold text-navy-950 mb-2">{item.title}</h3>
-                  <p className="text-xs sm:text-sm text-slate-text leading-relaxed mb-4">
+                  <h3 className="text-lg font-bold text-navy-950 mb-2.5">
+                    {item.title}
+                  </h3>
+                  <p className="text-sm text-slate-text leading-relaxed mb-6">
                     {item.description}
                   </p>
                 </div>
 
-                <div className="pt-4 border-t border-slate-border text-xs text-navy-950 font-medium bg-surface-muted/30 -mx-7 -mb-7 p-4 rounded-b-xl">
+                <div className="pt-4 border-t border-slate-100 text-xs font-medium text-navy-900 bg-slate-50/70 -mx-7 sm:-mx-8 -mb-7 sm:-mb-8 p-4 rounded-b-2xl">
                   {item.detail}
                 </div>
               </div>
