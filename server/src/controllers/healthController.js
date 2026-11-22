@@ -5,6 +5,31 @@ export async function getHealth(req, res, next) {
   try {
     const dbStatus = await testConnection();
 
+    // Check AI Service connectivity (non-blocking fallback)
+    let aiStatus = { type: 'FastAPI', status: 'standby_or_offline' };
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1200);
+
+      const aiRes = await fetch(`${env.AI_SERVICE.URL}/health`, {
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (aiRes.ok) {
+        const aiData = await aiRes.json();
+        aiStatus = {
+          type: 'FastAPI',
+          status: aiData.status || 'connected',
+          service: aiData.service || 'UniMate AI Service',
+          version: aiData.version || '1.0.0',
+        };
+      }
+    } catch {
+      // AI service is not running or timed out; remains standby in Phase 1
+      aiStatus = { type: 'FastAPI', status: 'standby_or_offline' };
+    }
+
     const isHealthy = dbStatus.connected;
     const statusCode = isHealthy ? 200 : 503;
 
@@ -21,6 +46,7 @@ export async function getHealth(req, res, next) {
         status: dbStatus.connected ? 'connected' : 'disconnected',
         ...(dbStatus.error && { error: dbStatus.error }),
       },
+      aiService: aiStatus,
     });
   } catch (error) {
     next(error);

@@ -1,54 +1,76 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PageHeader from '../../components/common/PageHeader';
 import Card from '../../components/common/Card';
 import Badge from '../../components/common/Badge';
-import { UtensilsCrossed, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
+import api from '../../services/api';
+import { UtensilsCrossed, Clock, CheckCircle2, Loader2 } from 'lucide-react';
 
-const MENU_ITEMS = [
+const FALLBACK_MENU = [
   {
-    name: 'Veg Sandwich (Toasted)',
-    category: 'Breakfast',
+    name: '[Sample] Veg Sandwich (Toasted)',
+    category: 'breakfast',
     price: 45.0,
-    description: 'Whole wheat bread with fresh sliced cucumbers, tomatoes, and spiced mint chutney.',
-    isAvailable: true,
+    description: '[Development Sample Data] Whole wheat bread with fresh sliced cucumbers, tomatoes, and spiced mint chutney.',
+    is_available: true,
   },
   {
-    name: 'Masala Dosa',
-    category: 'Breakfast',
+    name: '[Sample] Masala Dosa',
+    category: 'breakfast',
     price: 60.0,
-    description: 'Crispy fermented crepe filled with spiced potato masala, served with sambar and coconut chutney.',
-    isAvailable: true,
+    description: '[Development Sample Data] Crispy fermented crepe filled with spiced potato masala, served with sambar and coconut chutney.',
+    is_available: true,
   },
   {
-    name: 'Paneer Butter Masala Thali',
-    category: 'Meals',
+    name: '[Sample] Paneer Butter Masala Thali',
+    category: 'meals',
     price: 120.0,
-    description: 'Cottage cheese curry, yellow dal tadka, steamed basmati rice, two rotis, fresh salad, and curd.',
-    isAvailable: true,
+    description: '[Development Sample Data] Cottage cheese curry, yellow dal tadka, steamed basmati rice, two rotis, fresh salad, and curd.',
+    is_available: true,
   },
   {
-    name: 'Cold Coffee',
-    category: 'Beverages',
+    name: '[Sample] Cold Coffee',
+    category: 'beverages',
     price: 40.0,
-    description: 'Chilled brewed coffee blended with milk and cocoa powder.',
-    isAvailable: true,
+    description: '[Development Sample Data] Chilled brewed coffee blended with milk and cocoa powder.',
+    is_available: true,
   },
   {
-    name: 'Hot Masala Chai',
-    category: 'Beverages',
+    name: '[Sample] Hot Masala Chai',
+    category: 'beverages',
     price: 15.0,
-    description: 'Freshly brewed spiced milk tea infused with crushed ginger and cardamom.',
-    isAvailable: true,
+    description: '[Development Sample Data] Freshly brewed spiced milk tea infused with crushed ginger and cardamom.',
+    is_available: true,
   },
 ];
 
 export default function CanteenPage() {
+  const [menuItems, setMenuItems] = useState(FALLBACK_MENU);
+  const [loading, setLoading] = useState(false);
   const [activeCategory, setActiveCategory] = useState('All');
 
-  const categories = ['All', 'Breakfast', 'Meals', 'Beverages'];
+  const categories = ['All', 'breakfast', 'meals', 'beverages'];
 
-  const filteredItems = MENU_ITEMS.filter(
-    (item) => activeCategory === 'All' || item.category === activeCategory
+  useEffect(() => {
+    async function fetchMenu() {
+      setLoading(true);
+      try {
+        const res = await api.get('/canteen/menu');
+        if (res.data.success && res.data.data.menuItems?.length > 0) {
+          setMenuItems(res.data.data.menuItems);
+        }
+      } catch (err) {
+        console.warn('[Canteen] Using fallback menu:', err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchMenu();
+  }, []);
+
+  const filteredItems = menuItems.filter(
+    (item) =>
+      activeCategory === 'All' ||
+      item.category.toLowerCase() === activeCategory.toLowerCase()
   );
 
   return (
@@ -77,12 +99,12 @@ export default function CanteenPage() {
       </div>
 
       {/* Category Tabs */}
-      <div className="flex items-center gap-2 mb-6 border-b border-slate-border pb-3">
+      <div className="flex items-center gap-2 mb-6 border-b border-slate-border pb-3 overflow-x-auto">
         {categories.map((cat) => (
           <button
             key={cat}
             onClick={() => setActiveCategory(cat)}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+            className={`px-3 py-1.5 text-xs font-medium rounded-lg capitalize transition-colors whitespace-nowrap ${
               activeCategory === cat
                 ? 'bg-navy-800 text-white shadow-xs'
                 : 'text-slate-text hover:text-navy-950 hover:bg-surface-muted'
@@ -94,28 +116,35 @@ export default function CanteenPage() {
       </div>
 
       {/* Menu Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-        {filteredItems.map((item, idx) => (
-          <Card key={idx} className="flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <Badge variant="neutral" className="text-[10px]">
-                  {item.category}
-                </Badge>
-                <span className="text-sm font-bold text-navy-950">₹{item.price.toFixed(2)}</span>
+      {loading ? (
+        <div className="py-12 text-center text-xs text-slate-text flex items-center justify-center gap-2">
+          <Loader2 className="w-4 h-4 animate-spin text-navy-800" />
+          <span>Loading menu catalog...</span>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          {filteredItems.map((item, idx) => (
+            <Card key={idx} className="flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <Badge variant="neutral" className="text-[10px] capitalize">
+                    {item.category}
+                  </Badge>
+                  <span className="text-sm font-bold text-navy-950">₹{Number(item.price).toFixed(2)}</span>
+                </div>
+                <h3 className="text-sm font-semibold text-navy-950 mb-1">{item.name}</h3>
+                <p className="text-xs text-slate-text leading-relaxed">{item.description}</p>
               </div>
-              <h3 className="text-sm font-semibold text-navy-950 mb-1">{item.name}</h3>
-              <p className="text-xs text-slate-text leading-relaxed">{item.description}</p>
-            </div>
-            <div className="mt-4 pt-3 border-t border-slate-border flex items-center justify-between text-xs">
-              <span className="flex items-center gap-1.5 text-state-success font-medium">
-                <CheckCircle2 className="w-3.5 h-3.5" /> Available
-              </span>
-              <span className="text-slate-text text-[11px]">Pre-order: Phase 2</span>
-            </div>
-          </Card>
-        ))}
-      </div>
+              <div className="mt-4 pt-3 border-t border-slate-border flex items-center justify-between text-xs">
+                <span className="flex items-center gap-1.5 text-state-success font-medium">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Available
+                </span>
+                <span className="text-slate-text text-[11px]">Pre-order: Phase 2</span>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
 
       {/* Scope Disclaimer */}
       <div className="p-4 rounded-xl bg-surface-muted/60 border border-slate-border text-xs text-slate-text leading-relaxed">

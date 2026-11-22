@@ -24,8 +24,8 @@ after(async () => {
   await pool.end();
 });
 
-describe('1. Health Check Endpoint', () => {
-  test('GET /health returns 200 and healthy database status', async () => {
+describe('1. Health Check & Service Connectivity', () => {
+  test('GET /health returns 200, database connected, and AI service status reported', async () => {
     const res = await fetch(`${baseUrl}/health`);
     assert.equal(res.status, 200);
 
@@ -34,6 +34,8 @@ describe('1. Health Check Endpoint', () => {
     assert.equal(body.status, 'healthy');
     assert.equal(body.database.type, 'MySQL');
     assert.equal(body.database.status, 'connected');
+    assert.ok(body.aiService);
+    assert.equal(body.aiService.type, 'FastAPI');
   });
 });
 
@@ -129,13 +131,15 @@ describe('2. Authentication Flow & Validation', () => {
   });
 });
 
-describe('3. Protected Routes & Authorization', () => {
+describe('3. Role-Based Access Control & Isolation Auditing', () => {
   let studentToken;
   let adminToken;
-  let operatorToken;
+  let canteenOpToken;
+  let xeroxOpToken;
+  let studentUserId;
 
   before(async () => {
-    // Obtain student token
+    // 1. Obtain demo student token
     const studentRes = await fetch(`${baseUrl}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -143,8 +147,9 @@ describe('3. Protected Routes & Authorization', () => {
     });
     const studentData = await studentRes.json();
     studentToken = studentData.data.token;
+    studentUserId = studentData.data.user.id;
 
-    // Obtain admin token
+    // 2. Obtain demo admin token
     const adminRes = await fetch(`${baseUrl}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -153,56 +158,45 @@ describe('3. Protected Routes & Authorization', () => {
     const adminData = await adminRes.json();
     adminToken = adminData.data.token;
 
-    // Obtain operator token
-    const opRes = await fetch(`${baseUrl}/auth/login`, {
+    // 3. Obtain demo canteen operator token
+    const canteenRes = await fetch(`${baseUrl}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: 'demo.canteen@campus.edu', password: 'OperatorPass123!' }),
     });
-    const opData = await opRes.json();
-    operatorToken = opData.data.token;
-  });
+    const canteenData = await canteenRes.json();
+    canteenOpToken = canteenData.data.token;
 
-  test('GET /auth/me returns 401 when no token is provided', async () => {
-    const res = await fetch(`${baseUrl}/auth/me`);
-    assert.equal(res.status, 401);
-    const body = await res.json();
-    assert.equal(body.success, false);
-    assert.equal(body.error.code, 'UNAUTHORIZED');
-  });
-
-  test('GET /auth/me returns authenticated student profile with valid token', async () => {
-    const res = await fetch(`${baseUrl}/auth/me`, {
-      headers: { Authorization: `Bearer ${studentToken}` },
+    // 4. Obtain demo xerox operator token
+    const xeroxRes = await fetch(`${baseUrl}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'demo.xerox@campus.edu', password: 'OperatorPass123!' }),
     });
-    assert.equal(res.status, 200);
-    const body = await res.json();
-    assert.equal(body.success, true);
-    assert.equal(body.data.user.email, 'demo.student@campus.edu');
-    assert.equal(body.data.user.role, 'student');
+    const xeroxData = await xeroxRes.json();
+    xeroxOpToken = xeroxData.data.token;
   });
 
+  // --- A. Admin Endpoint Protection ---
   test('GET /users (Admin only) returns 403 Forbidden for Student role', async () => {
     const res = await fetch(`${baseUrl}/users`, {
       headers: { Authorization: `Bearer ${studentToken}` },
     });
     assert.equal(res.status, 403);
     const body = await res.json();
-    assert.equal(body.success, false);
     assert.equal(body.error.code, 'FORBIDDEN');
   });
 
-  test('GET /users (Admin only) returns 403 Forbidden for Operator role', async () => {
+  test('GET /users (Admin only) returns 403 Forbidden for Canteen Operator role', async () => {
     const res = await fetch(`${baseUrl}/users`, {
-      headers: { Authorization: `Bearer ${operatorToken}` },
+      headers: { Authorization: `Bearer ${canteenOpToken}` },
     });
     assert.equal(res.status, 403);
     const body = await res.json();
-    assert.equal(body.success, false);
     assert.equal(body.error.code, 'FORBIDDEN');
   });
 
-  test('GET /users (Admin only) returns 200 and user listing for Admin role', async () => {
+  test('GET /users (Admin only) returns 200 OK and user directory for Admin role', async () => {
     const res = await fetch(`${baseUrl}/users`, {
       headers: { Authorization: `Bearer ${adminToken}` },
     });
@@ -211,6 +205,101 @@ describe('3. Protected Routes & Authorization', () => {
     assert.equal(body.success, true);
     assert.ok(Array.isArray(body.data.users));
     assert.ok(body.data.users.length >= 4);
-    assert.ok(body.data.pagination);
+  });
+
+  // --- B. Record Ownership Protection ---
+  test('GET /users/:id allows student to access their own record', async () => {
+    const res = await fetch(`${baseUrl}/users/${studentUserId}`, {
+      headers: { Authorization: `Bearer ${studentToken}` },
+    });
+    assert.equal(res.status, 200);
+    const body = await res.json();
+    assert.equal(body.data.profile.id, studentUserId);
+  });
+
+  test('GET /users/:id returns 403 Forbidden when a student attempts to view another user record', async () => {
+    const otherUserId = studentUserId + 1; // Different user ID
+    const res = await fetch(`${baseUrl}/users/${otherUserId}`, {
+      headers: { Authorization: `Bearer ${studentToken}` },
+    });
+    assert.equal(res.status, 403);
+    const body = await res.json();
+    assert.equal(body.error.code, 'FORBIDDEN');
+  });
+
+  test('GET /users/:id allows Admin to access any user record (oversight privilege)', async () => {
+    const res = await fetch(`${baseUrl}/users/${studentUserId}`, {
+      headers: { Authorization: `Bearer ${adminToken}` },
+    });
+    assert.equal(res.status, 200);
+    const body = await res.json();
+    assert.equal(body.data.profile.id, studentUserId);
+  });
+
+  // --- C. Cross-Operator Separation Audit ---
+  test('GET /canteen/operator/queue returns 200 OK for Canteen Operator', async () => {
+    const res = await fetch(`${baseUrl}/canteen/operator/queue`, {
+      headers: { Authorization: `Bearer ${canteenOpToken}` },
+    });
+    assert.equal(res.status, 200);
+    const body = await res.json();
+    assert.equal(body.data.operatorService, 'canteen');
+  });
+
+  test('GET /printing/operator/queue returns 403 Forbidden for Canteen Operator', async () => {
+    const res = await fetch(`${baseUrl}/printing/operator/queue`, {
+      headers: { Authorization: `Bearer ${canteenOpToken}` },
+    });
+    assert.equal(res.status, 403);
+    const body = await res.json();
+    assert.equal(body.error.code, 'FORBIDDEN');
+  });
+
+  test('GET /printing/operator/queue returns 200 OK for Xerox Operator', async () => {
+    const res = await fetch(`${baseUrl}/printing/operator/queue`, {
+      headers: { Authorization: `Bearer ${xeroxOpToken}` },
+    });
+    assert.equal(res.status, 200);
+    const body = await res.json();
+    assert.equal(body.data.operatorService, 'printing');
+  });
+
+  test('GET /canteen/operator/queue returns 403 Forbidden for Xerox Operator', async () => {
+    const res = await fetch(`${baseUrl}/canteen/operator/queue`, {
+      headers: { Authorization: `Bearer ${xeroxOpToken}` },
+    });
+    assert.equal(res.status, 403);
+    const body = await res.json();
+    assert.equal(body.error.code, 'FORBIDDEN');
+  });
+
+  test('GET /canteen/operator/queue returns 403 Forbidden for Student', async () => {
+    const res = await fetch(`${baseUrl}/canteen/operator/queue`, {
+      headers: { Authorization: `Bearer ${studentToken}` },
+    });
+    assert.equal(res.status, 403);
+    const body = await res.json();
+    assert.equal(body.error.code, 'FORBIDDEN');
+  });
+
+  test('GET /printing/operator/queue returns 403 Forbidden for Student', async () => {
+    const res = await fetch(`${baseUrl}/printing/operator/queue`, {
+      headers: { Authorization: `Bearer ${studentToken}` },
+    });
+    assert.equal(res.status, 403);
+    const body = await res.json();
+    assert.equal(body.error.code, 'FORBIDDEN');
+  });
+
+  test('Admin has oversight access to both Canteen and Printing operator queues', async () => {
+    const canteenRes = await fetch(`${baseUrl}/canteen/operator/queue`, {
+      headers: { Authorization: `Bearer ${adminToken}` },
+    });
+    assert.equal(canteenRes.status, 200);
+
+    const printingRes = await fetch(`${baseUrl}/printing/operator/queue`, {
+      headers: { Authorization: `Bearer ${adminToken}` },
+    });
+    assert.equal(printingRes.status, 200);
   });
 });

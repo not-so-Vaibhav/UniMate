@@ -21,7 +21,7 @@ async function seedData() {
     const operatorPass = await bcrypt.hash('OperatorPass123!', salt);
     const adminPass = await bcrypt.hash('AdminPass123!', salt);
 
-    // 1. Seed demo accounts (clearly identified as Demo/Dev accounts)
+    // 1. Seed demo accounts (explicitly identified as Demo/Development accounts)
     const users = [
       ['demo.student@campus.edu', studentPass, 'Arjun Sharma (Demo Student)', 'student', null, 'STU-2026-0842', '+91 98765 43210'],
       ['demo.canteen@campus.edu', operatorPass, 'Ramesh Canteen Desk (Demo Operator)', 'operator', 'canteen', null, '+91 98765 43211'],
@@ -39,13 +39,13 @@ async function seedData() {
     }
     console.log('[Seed] Baseline demo users verified (Student, Canteen Operator, Xerox Operator, Admin).');
 
-    // 2. Seed development campus locations
+    // 2. Seed development campus locations (clearly labeled as development sample data)
     const locations = [
-      ['Main Academic Block - Sector A', 'MAB-A', 'academic', 'Main Academic Building', 'Ground Floor', 'Primary lecture halls A1-A10 and department offices.'],
-      ['Central Library', 'LIB-01', 'facility', 'Library Complex', '1st Floor', 'Central university reading halls, reference sections, and digital catalogue.'],
-      ['Student Activity Center', 'SAC-01', 'facility', 'SAC Building', 'Ground Floor', 'Student union hall, club rooms, and indoor sports desk.'],
-      ['North Canteen', 'CNT-NORTH', 'canteen', 'Dining Block', 'Ground Floor', 'Main campus cafeteria and food counter.'],
-      ['Digital Xerox Center', 'XRX-01', 'facility', 'Main Academic Building', 'Ground Floor', 'Central photocopying, spiral binding, and document printing hub.'],
+      ['[Sample] Main Academic Block - Sector A', 'MAB-A', 'academic', 'Main Academic Building', 'Ground Floor', '[Development Sample Data] Primary lecture halls A1-A10 and department offices.'],
+      ['[Sample] Central Library', 'LIB-01', 'facility', 'Library Complex', '1st Floor', '[Development Sample Data] Central university reading halls, reference sections, and digital catalogue.'],
+      ['[Sample] Student Activity Center', 'SAC-01', 'facility', 'SAC Building', 'Ground Floor', '[Development Sample Data] Student union hall, club rooms, and indoor sports desk.'],
+      ['[Sample] North Canteen', 'CNT-NORTH', 'canteen', 'Dining Block', 'Ground Floor', '[Development Sample Data] Main campus cafeteria and food counter.'],
+      ['[Sample] Digital Xerox Center', 'XRX-01', 'facility', 'Main Academic Building', 'Ground Floor', '[Development Sample Data] Central photocopying, spiral binding, and document printing hub.'],
     ];
 
     for (const loc of locations) {
@@ -56,15 +56,15 @@ async function seedData() {
         loc
       );
     }
-    console.log('[Seed] Verified campus locations seeded for development.');
+    console.log('[Seed] Verified campus locations seeded (all labeled with [Sample]).');
 
-    // 3. Seed development canteen menu items
+    // 3. Seed development canteen menu items (clearly labeled as development sample data)
     const menuItems = [
-      ['Veg Sandwich (Toasted)', 'breakfast', 45.00, 'Whole wheat bread with fresh cucumbers, tomatoes, and mint chutney.'],
-      ['Masala Dosa', 'breakfast', 60.00, 'Crispy fermented crepe served with sambar and fresh coconut chutney.'],
-      ['Paneer Butter Masala Thali', 'meals', 120.00, 'Paneer curry, yellow dal, rice, two rotis, salad and curd.'],
-      ['Cold Coffee', 'beverages', 40.00, 'Chilled brewed coffee blended with milk and cocoa powder.'],
-      ['Hot Masala Chai', 'beverages', 15.00, 'Freshly brewed spiced milk tea with ginger and cardamom.'],
+      ['[Sample] Veg Sandwich (Toasted)', 'breakfast', 45.00, '[Development Sample Data] Whole wheat bread with fresh cucumbers, tomatoes, and mint chutney.'],
+      ['[Sample] Masala Dosa', 'breakfast', 60.00, '[Development Sample Data] Crispy fermented crepe served with sambar and fresh coconut chutney.'],
+      ['[Sample] Paneer Butter Masala Thali', 'meals', 120.00, '[Development Sample Data] Paneer curry, yellow dal, rice, two rotis, salad and curd.'],
+      ['[Sample] Cold Coffee', 'beverages', 40.00, '[Development Sample Data] Chilled brewed coffee blended with milk and cocoa powder.'],
+      ['[Sample] Hot Masala Chai', 'beverages', 15.00, '[Development Sample Data] Freshly brewed spiced milk tea with ginger and cardamom.'],
     ];
 
     for (const item of menuItems) {
@@ -74,9 +74,14 @@ async function seedData() {
           `INSERT INTO canteen_menu_items (name, category, price, description) VALUES (?, ?, ?, ?)`,
           item
         );
+      } else {
+        await connection.query(
+          `UPDATE canteen_menu_items SET category = ?, price = ?, description = ? WHERE id = ?`,
+          [item[1], item[2], item[3], existing[0].id]
+        );
       }
     }
-    console.log('[Seed] Baseline canteen menu items seeded.');
+    console.log('[Seed] Baseline canteen menu items seeded (all labeled with [Sample]).');
 
     console.log('[Seed] Database seeding completed successfully.');
   } catch (error) {

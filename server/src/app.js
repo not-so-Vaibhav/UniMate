@@ -11,15 +11,21 @@ const app = express();
 // Security HTTP headers
 app.use(helmet());
 
-// CORS configuration - allow designated frontend origin
+// Tight CORS configuration - strict origin allowlist
+const allowedOrigins = [
+  env.CLIENT_URL,
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+].filter(Boolean);
+
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (e.g. mobile apps, curl, postman) or matching frontend
-      if (!origin || origin === env.CLIENT_URL || env.NODE_ENV === 'development') {
+      // Allow requests with no origin (e.g. server-to-server, curl, Postman, native tools)
+      if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(new Error('CORS policy: Not allowed by Access-Control-Allow-Origin'));
+        callback(new Error(`CORS policy: Origin '${origin}' is not allowed by Access-Control-Allow-Origin.`));
       }
     },
     credentials: true,
@@ -33,9 +39,9 @@ if (env.NODE_ENV !== 'test') {
   app.use(morgan(env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 }
 
-// Body parsing middleware
-app.use(express.json({ limit: '5mb' }));
-app.use(express.urlencoded({ extended: true, limit: '5mb' }));
+// Body parsing middleware with size limits
+app.use(express.json({ limit: '2mb' }));
+app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 
 // Mount Versioned API Routes
 app.use('/api/v1', apiRouter);

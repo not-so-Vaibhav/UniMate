@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   LogOut,
   X,
+  ClipboardList,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Badge from '../components/common/Badge';
@@ -24,18 +25,37 @@ export default function Sidebar({ onCloseMobile }) {
         { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
       ],
     },
-    {
-      section: 'Campus Services',
-      items: [
-        { label: 'AI Campus Assistant', path: '/assistant', icon: Bot, badge: 'Phase 2' },
-        { label: 'Campus Navigation', path: '/navigation', icon: MapPin },
-        { label: 'Canteen', path: '/canteen', icon: UtensilsCrossed },
-        { label: 'Xerox / Printing', path: '/printing', icon: Printer },
-        { label: 'Lost & Found', path: '/lost-found', icon: Search },
-      ],
-    },
   ];
 
+  // Operator-specific service queue item
+  if (role === 'operator') {
+    const isCanteen = user?.operatorService === 'canteen';
+    navItems.push({
+      section: 'Operator Service Queue',
+      items: [
+        {
+          label: isCanteen ? 'Canteen Desk' : 'Xerox Desk',
+          path: isCanteen ? '/canteen' : '/printing',
+          icon: isCanteen ? UtensilsCrossed : Printer,
+          badge: 'Desk Active',
+        },
+      ],
+    });
+  }
+
+  // Core Campus Services
+  navItems.push({
+    section: 'Campus Services',
+    items: [
+      { label: 'AI Campus Assistant', path: '/assistant', icon: Bot, badge: 'Phase 2' },
+      { label: 'Campus Navigation', path: '/navigation', icon: MapPin },
+      { label: 'Canteen', path: '/canteen', icon: UtensilsCrossed },
+      { label: 'Xerox / Printing', path: '/printing', icon: Printer },
+      { label: 'Lost & Found', path: '/lost-found', icon: Search },
+    ],
+  });
+
+  // Administration section for Admin role only
   if (role === 'admin') {
     navItems.push({
       section: 'Administration',
@@ -75,7 +95,8 @@ export default function Sidebar({ onCloseMobile }) {
           {onCloseMobile && (
             <button
               onClick={onCloseMobile}
-              className="lg:hidden p-1.5 rounded-lg text-slate-text hover:text-navy-950 hover:bg-surface-muted"
+              className="lg:hidden p-1.5 rounded-lg text-slate-text hover:text-navy-950 hover:bg-surface-muted focus:outline-none"
+              aria-label="Close navigation"
             >
               <X className="w-4 h-4" />
             </button>
@@ -83,7 +104,7 @@ export default function Sidebar({ onCloseMobile }) {
         </div>
 
         {/* Navigation Sections */}
-        <nav className="p-3 space-y-6 overflow-y-auto max-h-[calc(100vh-140px)]">
+        <nav className="p-3 space-y-5 overflow-y-auto max-h-[calc(100vh-140px)]">
           {navItems.map((group) => (
             <div key={group.section}>
               <div className="px-3 mb-1.5 text-[11px] font-semibold text-slate-text uppercase tracking-wider">
