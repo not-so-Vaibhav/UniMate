@@ -364,6 +364,13 @@ depending on available data.
 
 ## 8. Key user journeys
 
+### Journey 0 --- Public visitor discovers UniMate and accesses the platform
+
+1.  Prospective student or visitor visits `https://unimate.campus/` (`/`).
+2.  Explores the five integrated campus modules, interactive showcase, and system integrity standards.
+3.  Clicks "Get Started" to reach registration or "Sign In" for an existing account.
+4.  Authenticated users returning to the public page see an instant "Open Dashboard" CTA with seamless continuation.
+
 ### Journey A --- Student asks a campus question
 
 1.  Student signs in.

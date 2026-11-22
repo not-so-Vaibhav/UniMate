@@ -73,8 +73,9 @@ MySQL          Python + FastAPI
 
 ### 3.1 Frontend responsibilities
 
--   Render public and authenticated application screens.
--   Provide role-appropriate navigation.
+-   Render public landing page (`/`) accessible without authentication, guiding visitors to login or registration.
+-   Provide role-appropriate navigation and protected routing (`/dashboard`, `/assistant`, `/navigation`, `/canteen`, `/printing`, `/lost-found`, `/admin`).
+-   Enforce client session guards via `ProtectedRoute` and `RoleRoute`.
 -   Validate inputs for usability; never rely on client validation for
     security.
 -   Call backend APIs.

@@ -117,7 +117,14 @@ values: 4, 8, 12, 16, 20, 24, 32, 40, 48.
 
 Create one coherent application shell shared by all modules.
 
-### Desktop
+### Public Landing Experience (`/`)
+
+-   **Sticky Navigation Bar:** Logo mark with subtle "Smart Campus" tag, anchor navigation (Home, Services, How It Works, Showcase, Architecture), and auth-aware CTAs ("Sign In" / "Get Started", or "Open Dashboard" for authenticated users).
+-   **Hero Presentation:** Refined type scale, calm background (`#F7F8FA`), and high-fidelity browser-framed product mockup showcasing the real application dashboard.
+-   **Interactions:** Smooth scrolling to anchor targets with `@media (prefers-reduced-motion: reduce)` fallbacks; responsive floating mobile drawer with clean backdrop overlay.
+-   **Showcase & Architecture:** Interactive tabbed interface tours highlighting real screenshots and honest technical integrity specifications.
+
+### Desktop App Shell
 
 -   A restrained left navigation rail/sidebar with clear active state.
 -   A compact top bar for page context and account actions.

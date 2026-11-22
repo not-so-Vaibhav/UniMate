@@ -17,13 +17,14 @@ Phase 1 establishes the unified production foundation, database schema, role-bas
 
 | Layer | Technology | Status | Implementation Details |
 |---|---|---|---|
-| **Frontend** | React 18 + Vite + Tailwind CSS | Completed | Responsive application shell, Lucide icons, design tokens per `UI_UX.md`, protected routing |
+| **Public Landing** | React 18 + Tailwind CSS | Completed | Premium public landing page at `/` with hero product mockup, five service highlights, interactive tab showcase, responsive mobile drawer, and auth-aware CTAs |
+| **Frontend Shell** | React 18 + Vite + Tailwind CSS | Completed | Responsive application shell, Lucide icons, design tokens per `UI_UX.md`, protected routing |
 | **State & Auth** | Context API + Axios Interceptors | Completed | Session persistence, JWT decoding, role-based view filtering, automated 401 handling |
 | **Backend API** | Node.js + Express.js | Completed | Layered architecture (Controllers, Services, Routes, Middleware), centralized error handling |
 | **Database** | MySQL Server (InnoDB, utf8mb4) | Completed | 9 normalized relational tables, foreign key constraints, indexes, automated migration & seed |
 | **Authorization** | JWT + RBAC Middleware | Completed | Least-privilege role boundaries (`student`, `operator`, `admin`), record ownership protection |
 | **AI Subsystem** | Python 3 + FastAPI | Ready | Independent service foundation with `/health` and `/api/v1/assistant/status` |
-| **Verification** | Node.js Native Test Runner | Verified | 11/11 automated integration tests passing; frontend built cleanly (0 errors) |
+| **Verification** | Node.js Native Test Runner | Verified | 19/19 automated integration tests passing; client production build passes cleanly (0 errors) |
 
 ---
 
@@ -176,4 +177,5 @@ The test runner verifies:
 ## 6. Project Roadmap
 
 - **Phase 1 (Completed):** Foundation, Relational Database, Security/RBAC, Express Backend, React UI Shell, and Design System.
+- **Phase 1.5 (Completed):** Premium Public-Facing Landing Page at `/` with responsive navigation, five service introductions, interactive showcase tour, architecture pillars, and auth-aware CTAs.
 - **Phase 2 (Pending Owner Approval):** AI Assistant Grounding & Knowledge Corpus, Canteen Pre-ordering Flow, Xerox File Upload & Queue, Campus Navigation Search & Detail, and Lost & Found Reporting.
