@@ -7,6 +7,7 @@ import printingRoutes from './printingRoutes.js';
 import locationRoutes from './locationRoutes.js';
 import lostFoundRoutes from './lostFoundRoutes.js';
 import assistantRoutes from './assistantRoutes.js';
+import knowledgeRoutes from './knowledgeRoutes.js';
 
 const router = Router();
 
@@ -19,5 +20,6 @@ router.use('/printing', printingRoutes);
 router.use('/locations', locationRoutes);
 router.use('/lost-found', lostFoundRoutes);
 router.use('/assistant', assistantRoutes);
+router.use('/knowledge', knowledgeRoutes);
 
 export default router;

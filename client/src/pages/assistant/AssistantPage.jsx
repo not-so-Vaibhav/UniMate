@@ -424,9 +424,26 @@ export default function AssistantPage() {
                       }`}
                     >
                       <div className="flex items-center justify-between gap-4 mb-1.5 pb-1 border-b border-white/10">
-                        <span className="text-[10px] font-medium uppercase tracking-wider opacity-75">
-                          {isUser ? 'You' : 'UniMate Assistant'}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-medium uppercase tracking-wider opacity-75">
+                            {isUser ? 'You' : 'UniMate Assistant'}
+                          </span>
+                          {!isUser && msg.provider_used === 'gemini' && (
+                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 font-medium border border-emerald-200">
+                              Gemini Grounded
+                            </span>
+                          )}
+                          {!isUser && msg.provider_used === 'deterministic_fallback' && (
+                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-800 font-medium border border-amber-200">
+                              Fallback Extraction
+                            </span>
+                          )}
+                          {!isUser && (!msg.provider_used || msg.provider_used === 'deterministic') && (
+                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-medium">
+                              Verified Corpus
+                            </span>
+                          )}
+                        </div>
                         <span className="text-[10px] opacity-60">
                           {new Date(msg.created_at).toLocaleTimeString([], {
                             hour: '2-digit',

@@ -362,3 +362,20 @@ For every phase, Google Antigravity must:
 designed, production-grade campus product. Visual quality,
 accessibility, and usability are acceptance criteria---not optional
 polish.
+
+---
+
+## 15. Phase 3 Design Patterns: Data Provenance & Hybrid AI Badging
+
+- **Provenance Status Chips:**
+  - `OFFICIAL_VERIFIED`: Solid emerald badge (`bg-emerald-50 text-emerald-800 border-emerald-200`) with `<CheckCircle2 />` icon.
+  - `DEVELOPMENT_SAMPLE`: Distinct slate badge (`bg-slate-100 text-slate-700 border-slate-300`) with `<Layers />` icon and explicit sample disclaimer.
+  - `PENDING_VERIFICATION`: Amber warning badge (`bg-amber-50 text-amber-800 border-amber-200`) with `<Clock />` icon.
+  - `RETIRED`: Rose badge (`bg-rose-50 text-rose-800 border-rose-200`) with `<Archive />` icon.
+- **Hybrid AI Status Indicators:**
+  - `Gemini Grounded`: Emerald badge with `<Sparkles />` chip indicating LLM synthesis grounded in retrieved campus documents.
+  - `Fallback Extraction`: Indigo badge indicating deterministic phrase extraction when Gemini is in fallback mode.
+  - `Verified Corpus Sources`: Interactive source pills displaying document title, circular number, and verification date.
+- **Admin Data Console:**
+  - Metric summary cards showing real DB counts across classifications.
+  - Clean filterable data table with document inspection drawer and audit revision timeline.

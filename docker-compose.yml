@@ -1,0 +1,120 @@
+# =================================================================
+# UniMate Full-Stack Docker Compose Orchestration
+# Production Simulation & Containerized Deployment
+# =================================================================
+
+version: '3.8'
+
+services:
+  # 1. MySQL 8.0 Relational Database
+  mysql:
+    image: mysql:8.0
+    container_name: unimate-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_production_password_2026
+      MYSQL_DATABASE: unimate_db
+      MYSQL_USER: unimate_user
+      MYSQL_PASSWORD: unimate_password_2026
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./server/src/db/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_production_password_2026"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - unimate-network
+
+  # 2. Python FastAPI AI Subsystem (Hybrid RAG)
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    container_name: unimate-ai-service
+    restart: unless-stopped
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+      - AI_MODE=HYBRID
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - GEMINI_MODEL=gemini-2.5-flash
+      - CONFIDENCE_THRESHOLD=0.28
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    networks:
+      - unimate-network
+
+  # 3. Node.js Express Core Backend
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: unimate-api-server
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=5001
+      - CLIENT_URL=http://localhost:80
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=unimate_user
+      - DB_PASSWORD=unimate_password_2026
+      - DB_NAME=unimate_db
+      - JWT_SECRET=production_super_secure_jwt_secret_key_minimum_32_chars_2026
+      - AI_SERVICE_URL=http://ai-service:8000
+      - MAX_FILE_SIZE_MB=10
+    ports:
+      - "5001:5001"
+    volumes:
+      - server_uploads:/app/uploads
+    depends_on:
+      mysql:
+        condition: service_healthy
+      ai-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/api/v1/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    networks:
+      - unimate-network
+
+  # 4. React Single Page Application (Nginx)
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: unimate-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+    networks:
+      - unimate-network
+
+volumes:
+  mysql_data:
+    driver: local
+  server_uploads:
+    driver: local
+
+networks:
+  unimate-network:
+    driver: bridge

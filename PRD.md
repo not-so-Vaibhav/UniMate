@@ -452,3 +452,13 @@ These are not to be guessed by the implementation agent:
 
 Record decisions and their rationale in the project documentation before
 relying on them.
+
+---
+
+## 12. Phase 3 Approved Decisions & Scope Realization
+
+In Phase 3, the project owner approved the following three architectural decisions:
+
+1. **Deployment Architecture:** Public internet deployment readiness with containerized multi-service Docker Compose topology, multi-stage Nginx static caching for the React SPA, and production environment templates (`.env.production.example`).
+2. **Hybrid AI Architecture:** Combined local deterministic BM25-style keyword retrieval with Google Gemini (`gemini-2.5-flash`) grounded generation. Zero-hallucination prompt injection defense and automatic fallback to deterministic extraction if Gemini API is unreachable or unconfigured.
+3. **Hybrid Campus Data Management:** Formal 3-state data onboarding lifecycle (`DEVELOPMENT_SAMPLE`, `PENDING_VERIFICATION`, `OFFICIAL_VERIFIED`, `RETIRED`). Full provenance auditing across knowledge circulars, campus navigation points, and canteen catalog items with institutional document revision history.

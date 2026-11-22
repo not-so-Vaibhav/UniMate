@@ -251,6 +251,8 @@ router.post('/conversations/:id/messages', authenticateToken, async (req, res, n
           sources: aiResponseData.sources || [],
           grounded: aiResponseData.grounded,
           confidence: aiResponseData.confidence,
+          provider_used: aiResponseData.provider_used || 'deterministic',
+          model_used: aiResponseData.model_used || null,
           suggested_followups: aiResponseData.suggested_followups || [],
           created_at: new Date(),
         },

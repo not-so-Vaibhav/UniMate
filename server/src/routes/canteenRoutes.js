@@ -183,8 +183,9 @@ router.patch(
 // Helper: Generate unique order reference
 function generateOrderNumber() {
   const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  const seq = Date.now().toString(36).toUpperCase().slice(-4);
   const rand = Math.floor(1000 + Math.random() * 9000);
-  return `ORD-${dateStr}-${rand}`;
+  return `ORD-${dateStr}-${seq}${rand}`;
 }
 
 // POST /api/v1/canteen/orders - Create Order (Database Transaction, Server-Side Pricing)
@@ -269,12 +270,12 @@ router.post('/orders', authenticateToken, async (req, res, next) => {
 
     await connection.commit();
 
-    // Fetch full created order with items
-    const [createdOrder] = await pool.query(
+    // Fetch full created order with items using the active transaction connection
+    const [createdOrder] = await connection.query(
       `SELECT id, order_number, user_id, status, total_amount, notes, created_at FROM canteen_orders WHERE id = ?`,
       [orderId]
     );
-    const [createdItems] = await pool.query(
+    const [createdItems] = await connection.query(
       `SELECT id, menu_item_id, item_name, quantity, unit_price, subtotal FROM canteen_order_items WHERE order_id = ?`,
       [orderId]
     );

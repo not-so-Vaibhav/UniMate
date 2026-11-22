@@ -63,8 +63,9 @@ const upload = multer({
 // Helper: Generate unique request reference
 function generateRequestNumber() {
   const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  const seq = Date.now().toString(36).toUpperCase().slice(-4);
   const rand = Math.floor(1000 + Math.random() * 9000);
-  return `PRT-${dateStr}-${rand}`;
+  return `PRT-${dateStr}-${seq}${rand}`;
 }
 
 // ==========================================
@@ -178,7 +179,7 @@ router.post(
 
       await connection.commit();
 
-      const [created] = await pool.query(
+      const [created] = await connection.query(
         `SELECT r.*, f.original_name, f.file_size_bytes, f.mime_type
          FROM print_requests r
          JOIN uploaded_files f ON r.file_id = f.id

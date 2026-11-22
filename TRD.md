@@ -392,3 +392,15 @@ Existing database and schema. - Authentication mechanism and role
 model. - AI model/provider and grounding strategy. - File storage
 provider and limits. - Campus map/location data source. - Hosting and
 deployment target.
+
+---
+
+## 16. Phase 3 Technical Implementation Record
+
+- **Date:** November 23, 2026
+- **Hybrid AI Architecture:** Integrated official Google Gemini Python SDK (`google-genai` v3.6.1) alongside local deterministic phrase/keyword matcher in `ai-service/app/services/gemini_provider.py`. Implemented 3 AI modes (`HYBRID`, `DETERMINISTIC_ONLY`, `GEMINI_ONLY`), unverified query refusal, prompt injection defense, and automated sync API (`POST /assistant/corpus/sync`).
+- **Relational Schema Extension:** Migrated MySQL to 13 tables adding `knowledge_documents`, `knowledge_document_revisions`, and provenance columns (`classification`, `source_reference`, `verified_by_user_id`, `verified_at`) across `campus_locations` and `canteen_menu_items`.
+- **Database Backup & Recovery:** Implemented `server/scripts/backup.js` and `server/scripts/restore.js` serializing all 13 tables into timestamped JSON snapshots with foreign-key safety.
+- **Production Hardening:** Added Helmet CSP security headers, strict CORS origin validation, rate-limiting on authentication and assistant endpoints (`express-rate-limit`), and connection pool scaling (limit: 25).
+- **Multi-Container Topology:** Provided production Dockerfiles for `client` (Node 20 build -> Nginx Alpine), `server` (Node 20 Alpine, non-root user), and `ai-service` (Python 3.11 slim), with `docker-compose.yml` health checks.
+- **Automated Verification:** 63 passing automated tests across 12 suites, plus 25-worker concurrent order and query load testing.

@@ -19,8 +19,10 @@ import {
   Cpu,
   Server,
   Database,
-  ArrowRight
+  ArrowRight,
+  DatabaseZap
 } from 'lucide-react';
+import DataManagementTab from './DataManagementTab';
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState('users');
@@ -101,10 +103,10 @@ export default function AdminPage() {
       )}
 
       {/* Admin Tabs */}
-      <div className="flex border-b border-slate-border text-xs font-medium">
+      <div className="flex border-b border-slate-border text-xs font-medium overflow-x-auto">
         <button
           onClick={() => setActiveTab('users')}
-          className={`pb-3 px-4 border-b-2 transition-colors flex items-center gap-2 ${
+          className={`pb-3 px-4 border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${
             activeTab === 'users'
               ? 'border-navy-900 text-navy-950 font-semibold'
               : 'border-transparent text-slate-muted hover:text-navy-950'
@@ -114,8 +116,19 @@ export default function AdminPage() {
           Registered Accounts ({pagination.total})
         </button>
         <button
+          onClick={() => setActiveTab('data')}
+          className={`pb-3 px-4 border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${
+            activeTab === 'data'
+              ? 'border-navy-900 text-navy-950 font-semibold'
+              : 'border-transparent text-slate-muted hover:text-navy-950'
+          }`}
+        >
+          <DatabaseZap className="w-4 h-4 text-navy-800" />
+          Data Onboarding & Provenance
+        </button>
+        <button
           onClick={() => setActiveTab('modules')}
-          className={`pb-3 px-4 border-b-2 transition-colors flex items-center gap-2 ${
+          className={`pb-3 px-4 border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${
             activeTab === 'modules'
               ? 'border-navy-900 text-navy-950 font-semibold'
               : 'border-transparent text-slate-muted hover:text-navy-950'
@@ -126,7 +139,7 @@ export default function AdminPage() {
         </button>
         <button
           onClick={() => setActiveTab('system')}
-          className={`pb-3 px-4 border-b-2 transition-colors flex items-center gap-2 ${
+          className={`pb-3 px-4 border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${
             activeTab === 'system'
               ? 'border-navy-900 text-navy-950 font-semibold'
               : 'border-transparent text-slate-muted hover:text-navy-950'
@@ -136,6 +149,8 @@ export default function AdminPage() {
           Subsystem Status
         </button>
       </div>
+
+      {activeTab === 'data' && <DataManagementTab />}
 
       {activeTab === 'users' && (
         <div className="space-y-6">

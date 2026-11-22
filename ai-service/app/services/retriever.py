@@ -101,6 +101,7 @@ class CampusKnowledgeRetriever:
                     "To prevent misinformation, please consult the relevant departmental counter or administrative desk directly."
                 ),
                 "sources": [],
+                "matched_docs": [],
                 "suggested_followups": [
                     "What are the central library working hours?",
                     "What are the printing rates at the Xerox counter?",
@@ -129,7 +130,7 @@ class CampusKnowledgeRetriever:
             }
         ]
 
-        # Include second source if closely related
+        matched = [top_doc]
         if len(scored_docs) > 1 and scored_docs[1][0] >= 0.40:
             second_doc = scored_docs[1][1]
             sources.append({
@@ -138,12 +139,14 @@ class CampusKnowledgeRetriever:
                 "source": second_doc["source"],
                 "category": second_doc["category"],
             })
+            matched.append(second_doc)
 
         return {
             "grounded": True,
             "confidence": top_score,
             "answer": answer_text,
             "sources": sources,
+            "matched_docs": matched,
             "suggested_followups": self._generate_followups(top_doc["category"])
         }
 
