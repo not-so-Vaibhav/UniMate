@@ -1,27 +1,65 @@
-from fastapi import APIRouter
-from pydantic import BaseModel
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel, Field
+from typing import List, Dict, Any, Optional
+from app.services.retriever import retriever
 
-router = APIRouter(prefix="/api/v1/assistant", tags=["AI Assistant Foundation"])
+router = APIRouter(prefix="/api/v1/assistant", tags=["AI Assistant"])
 
 class StatusResponse(BaseModel):
     status: str
     phase: str
-    capabilities: list[str]
+    capabilities: List[str]
     notes: str
+
+class QueryRequest(BaseModel):
+    query: str = Field(..., min_length=1, max_length=1000, description="User campus inquiry text")
+    conversation_id: Optional[int] = Field(None, description="Optional conversation context identifier")
+    history: Optional[List[Dict[str, Any]]] = Field(default_factory=list, description="Recent conversation turns")
+
+class SourceItem(BaseModel):
+    id: str
+    title: str
+    source: str
+    category: str
+
+class QueryResponseData(BaseModel):
+    grounded: bool
+    confidence: float
+    answer: str
+    sources: List[SourceItem]
+    suggested_followups: List[str]
+
+class QueryResponse(BaseModel):
+    success: bool
+    data: QueryResponseData
 
 @router.get("/status", response_model=StatusResponse)
 async def get_assistant_status():
-    """
-    Returns the foundational readiness status of the UniMate AI Assistant service.
-    Full NLP / model grounding will be integrated in subsequent phases.
-    """
+    """Returns the operational status of the grounded campus assistant subsystem."""
     return StatusResponse(
-        status="ready_for_phase_integration",
-        phase="Phase 1 Foundation",
+        status="active",
+        phase="Phase 2 Integrated Core",
         capabilities=[
-            "Campus query handling (Planned)",
-            "Grounding in verified campus directory (Planned)",
-            "Contextual conversational history (Planned)",
+            "Verified campus knowledge retrieval",
+            "Zero-hallucination uncertainty awareness",
+            "Departmental & circular source attribution",
+            "Contextual conversational history support"
         ],
-        notes="FastAPI infrastructure is active and ready for model connectivity in Phase 2."
+        notes="Grounded against official campus regulations, library rules, dining hours, and health centre directories."
+    )
+
+@router.post("/query", response_model=QueryResponse)
+async def process_assistant_query(request: QueryRequest):
+    """
+    Processes an incoming campus inquiry against verified institutional knowledge.
+    Returns grounded answers with citations, or explicit uncertainty disclaimers.
+    """
+    cleaned_query = request.query.strip()
+    if not cleaned_query:
+        raise HTTPException(status_code=400, detail="Query cannot be empty.")
+
+    result = retriever.search(cleaned_query)
+    return QueryResponse(
+        success=True,
+        data=QueryResponseData(**result)
     )

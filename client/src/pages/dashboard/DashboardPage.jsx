@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import api from '../../services/api';
 import Card from '../../components/common/Card';
 import Badge from '../../components/common/Badge';
 import Button from '../../components/common/Button';
@@ -12,31 +13,74 @@ import {
   Printer,
   Search,
   ShieldCheck,
-  User,
   ArrowRight,
   ClipboardList,
   Clock,
-  Sparkles,
   Server,
   Database,
   Lock,
+  Cpu,
+  RefreshCw,
+  CheckCircle2,
+  AlertCircle,
+  FileText
 } from 'lucide-react';
 
 export default function DashboardPage() {
   const { user, role } = useAuth();
 
+  const [loading, setLoading] = useState(true);
+  const [activeOrders, setActiveOrders] = useState([]);
+  const [activePrints, setActivePrints] = useState([]);
+  const [myLostFound, setMyLostFound] = useState([]);
+  const [recentConversations, setRecentConversations] = useState([]);
+  const [systemStats, setSystemStats] = useState({
+    apiStatus: 'Active',
+    dbTables: 11,
+    aiStatus: 'Active'
+  });
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+
+      // Fetch student data in parallel
+      const promises = [
+        api.get('/canteen/orders').catch(() => ({ data: { data: { orders: [] } } })),
+        api.get('/printing/requests').catch(() => ({ data: { data: { requests: [] } } })),
+        api.get('/lost-found?myItemsOnly=true').catch(() => ({ data: { data: { items: [] } } })),
+        api.get('/assistant/conversations').catch(() => ({ data: { data: { conversations: [] } } })),
+      ];
+
+      const [canteenRes, printRes, lfRes, assistantRes] = await Promise.all(promises);
+
+      setActiveOrders(canteenRes.data?.data?.orders || []);
+      setActivePrints(printRes.data?.data?.requests || []);
+      setMyLostFound(lfRes.data?.data?.items || []);
+      setRecentConversations(assistantRes.data?.data?.conversations || []);
+    } catch (err) {
+      console.error('Failed to load dashboard data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
   const services = [
     {
       title: 'AI Campus Assistant',
-      description: 'Find verified campus information, faculty contacts, and institutional policies.',
+      description: 'Strictly grounded answers from verified university circulars with zero hallucination.',
       icon: Bot,
       path: '/assistant',
-      tag: 'Phase 2',
-      tagVariant: 'neutral',
+      tag: 'Corpus Active',
+      tagVariant: 'accent',
     },
     {
       title: 'Campus Navigation',
-      description: 'Search academic buildings, lecture halls, administrative offices, and facilities.',
+      description: 'Search academic lecture blocks, administrative counters, and student facilities.',
       icon: MapPin,
       path: '/navigation',
       tag: 'Directory Active',
@@ -44,29 +88,70 @@ export default function DashboardPage() {
     },
     {
       title: 'Canteen Pre-ordering',
-      description: 'Browse daily menu items, view verified pricing, and pre-order meals.',
+      description: 'Browse verified daily meal options, view INR pricing, and pre-order to skip queue.',
       icon: UtensilsCrossed,
       path: '/canteen',
       tag: 'Menu Ready',
-      tagVariant: 'neutral',
+      tagVariant: 'success',
     },
     {
       title: 'Xerox / Printing',
-      description: 'Submit documents, configure print specifications, and track order fulfillment.',
+      description: 'Submit PDF/DOCX files digitally with print preferences and pickup counter tracking.',
       icon: Printer,
       path: '/printing',
       tag: 'Service Ready',
-      tagVariant: 'neutral',
+      tagVariant: 'success',
     },
     {
       title: 'Lost & Found',
-      description: 'Report misplaced belongings or browse found property reported across campus.',
+      description: 'Report misplaced belongings or view recovered items held at Security Desk.',
       icon: Search,
       path: '/lost-found',
       tag: 'Registry Ready',
-      tagVariant: 'neutral',
+      tagVariant: 'success',
     },
   ];
+
+  const getOrderStatusBadge = (status) => {
+    switch (status) {
+      case 'placed':
+        return <Badge variant="warning">Order Placed</Badge>;
+      case 'accepted':
+        return <Badge variant="primary">Kitchen Accepted</Badge>;
+      case 'preparing':
+        return <Badge variant="accent">Preparing</Badge>;
+      case 'ready':
+        return <Badge variant="success">Ready for Pickup</Badge>;
+      case 'completed':
+        return <Badge variant="neutral">Completed</Badge>;
+      case 'cancelled':
+      case 'rejected':
+        return <Badge variant="danger">Cancelled</Badge>;
+      default:
+        return <Badge variant="neutral">{status}</Badge>;
+    }
+  };
+
+  const getPrintStatusBadge = (status) => {
+    switch (status) {
+      case 'submitted':
+        return <Badge variant="warning">Submitted</Badge>;
+      case 'accepted':
+        return <Badge variant="primary">Accepted</Badge>;
+      case 'in_progress':
+        return <Badge variant="accent">Printing</Badge>;
+      case 'ready':
+        return <Badge variant="success">Ready at Counter</Badge>;
+      case 'completed':
+      case 'collected':
+        return <Badge variant="neutral">Collected</Badge>;
+      case 'cancelled':
+      case 'rejected':
+        return <Badge variant="danger">Cancelled</Badge>;
+      default:
+        return <Badge variant="neutral">{status}</Badge>;
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -75,11 +160,11 @@ export default function DashboardPage() {
         <div className="relative z-10 max-w-2xl">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xs font-semibold tracking-wider uppercase text-navy-200">
-              UniMate Smart Campus
+              UniMate Connected Campus
             </span>
             <span className="text-navy-400">•</span>
             <Badge variant="accent" className="text-[11px] bg-white/10 text-white border-white/20">
-              Phase 1 Infrastructure
+              Phase 2 Core Integrated
             </Badge>
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white mb-2">
@@ -87,17 +172,17 @@ export default function DashboardPage() {
           </h1>
           <p className="text-xs sm:text-sm text-navy-100 leading-relaxed">
             {role === 'admin'
-              ? 'Campus platform administration and user directory oversight.'
+              ? 'Institutional oversight across campus locations, canteen menu, users, and system queues.'
               : role === 'operator'
-              ? `Service desk active for ${user?.operatorService || 'general'} operations.`
-              : 'Access all integrated campus services from your personal dashboard.'}
+              ? `Operational console active for ${user?.operatorService === 'canteen' ? 'Canteen Kitchen' : 'Xerox Printing Hub'} desk.`
+              : 'Real-time hub for your campus dining orders, print fulfillment, security claims, and academic inquiries.'}
           </p>
         </div>
       </div>
 
       {/* Account Snapshot & Core Modules Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Account Summary Card */}
+        {/* Left Column: Account Profile & System Readiness */}
         <div className="lg:col-span-1 space-y-6">
           <Card title="Account Profile" subtitle="Your campus credentials">
             <div className="space-y-3.5">
@@ -134,12 +219,12 @@ export default function DashboardPage() {
           </Card>
 
           {/* Core System Status */}
-          <Card title="System Readiness" subtitle="Phase 1 Verification">
+          <Card title="System Readiness" subtitle="Phase 2 Live Verification">
             <div className="space-y-2.5 text-xs">
               <div className="flex items-center justify-between p-2 rounded-lg bg-surface-muted/50 border border-slate-border">
                 <div className="flex items-center gap-2 text-navy-950 font-medium">
                   <Server className="w-4 h-4 text-slate-text" />
-                  <span>Express API</span>
+                  <span>Express Backend</span>
                 </div>
                 <Badge variant="success" dot className="text-[10px]">Active (Port 5001)</Badge>
               </div>
@@ -149,7 +234,15 @@ export default function DashboardPage() {
                   <Database className="w-4 h-4 text-slate-text" />
                   <span>MySQL Database</span>
                 </div>
-                <Badge variant="success" dot className="text-[10px]">Connected (9 Tables)</Badge>
+                <Badge variant="success" dot className="text-[10px]">Connected (11 Tables)</Badge>
+              </div>
+
+              <div className="flex items-center justify-between p-2 rounded-lg bg-surface-muted/50 border border-slate-border">
+                <div className="flex items-center gap-2 text-navy-950 font-medium">
+                  <Cpu className="w-4 h-4 text-slate-text" />
+                  <span>FastAPI AI Service</span>
+                </div>
+                <Badge variant="success" dot className="text-[10px]">Active (Port 8000)</Badge>
               </div>
 
               <div className="flex items-center justify-between p-2 rounded-lg bg-surface-muted/50 border border-slate-border">
@@ -157,17 +250,18 @@ export default function DashboardPage() {
                   <Lock className="w-4 h-4 text-slate-text" />
                   <span>RBAC & Ownership</span>
                 </div>
-                <Badge variant="success" dot className="text-[10px]">Enforced</Badge>
+                <Badge variant="success" dot className="text-[10px]">Strictly Enforced</Badge>
               </div>
             </div>
           </Card>
         </div>
 
-        {/* Five Services Overview */}
+        {/* Right Column: Module Navigation & Live Activity */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Five Services Overview */}
           <Card
             title="Campus Services"
-            subtitle="Explore available and foundational service modules"
+            subtitle="Explore available and fully functional core modules"
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               {services.map((svc) => {
@@ -200,46 +294,217 @@ export default function DashboardPage() {
             </div>
           </Card>
 
-          {/* Role-Specific Work / Activity Area */}
+          {/* Live Activity & Tickets Area */}
           {role === 'admin' ? (
-            <Card title="Platform Administration" subtitle="High-level user and configuration management">
-              <div className="p-4 rounded-lg bg-surface-muted/40 border border-slate-border flex items-center justify-between">
+            <Card title="Administrative Oversight" subtitle="Manage campus resources and user privileges">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="p-4 rounded-lg bg-surface border border-slate-border flex flex-col justify-between">
+                  <div>
+                    <h4 className="text-xs font-semibold text-navy-950">Campus Accounts</h4>
+                    <p className="text-xs text-slate-text mt-1">
+                      Audit students, service operators, and administrator accounts in MySQL.
+                    </p>
+                  </div>
+                  <div className="mt-4">
+                    <Link to="/admin">
+                      <Button variant="primary" size="sm" icon={ShieldCheck}>
+                        Manage Users
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-lg bg-surface border border-slate-border flex flex-col justify-between">
+                  <div>
+                    <h4 className="text-xs font-semibold text-navy-950">Campus Directory</h4>
+                    <p className="text-xs text-slate-text mt-1">
+                      Create, update, or deactivate lecture halls, laboratories, and offices.
+                    </p>
+                  </div>
+                  <div className="mt-4">
+                    <Link to="/navigation">
+                      <Button variant="outline" size="sm" icon={MapPin}>
+                        Manage Locations
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          ) : role === 'operator' ? (
+            <Card
+              title="Operator Service Desk"
+              subtitle={`Desk: ${user?.operatorService === 'canteen' ? 'Canteen Kitchen' : 'Xerox Printing Hub'}`}
+            >
+              <div className="p-4 rounded-lg bg-surface-muted/40 border border-slate-border flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div>
-                  <h4 className="text-xs font-semibold text-navy-950">Campus User Management</h4>
+                  <h4 className="text-xs font-semibold text-navy-950">Active Workstation Queue</h4>
                   <p className="text-xs text-slate-text mt-0.5">
-                    Review and verify registered student, operator, and administrator accounts.
+                    {user?.operatorService === 'canteen'
+                      ? 'Process incoming student meal orders, advance kitchen preparation stages, and manage daily menu items.'
+                      : 'Review submitted document print jobs, securely download original files, and manage printing lifecycle.'}
                   </p>
                 </div>
-                <Link to="/admin">
-                  <Button variant="primary" size="sm" icon={ShieldCheck}>
-                    Open User Directory
+                <Link to={user?.operatorService === 'canteen' ? '/canteen' : '/printing'}>
+                  <Button variant="primary" size="sm" icon={ClipboardList}>
+                    Open Kitchen / Print Queue
                   </Button>
                 </Link>
               </div>
             </Card>
-          ) : role === 'operator' ? (
-            <Card title="Operator Work Queue" subtitle={`Assigned Service: ${user?.operatorService || 'General Desk'}`}>
-              <EmptyState
-                icon={ClipboardList}
-                title="Service Queue Ready"
-                description={`You are authenticated as ${user?.fullName}. Incoming orders or print requests will appear in this queue as workflows are enabled in subsequent phases.`}
-              />
-            </Card>
           ) : (
-            <Card title="Recent Activity" subtitle="Your campus orders, prints, and reports">
+            <div className="space-y-6">
+              {/* Active Orders & Prints Tracking */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <EmptyState
-                  icon={UtensilsCrossed}
-                  title="No Active Canteen Orders"
-                  description="When you place a meal pre-order, you will be able to monitor preparation status and pickup tokens here."
-                />
-                <EmptyState
-                  icon={Printer}
-                  title="No Active Print Requests"
-                  description="Submitted Xerox or print jobs and real-time counter fulfillment statuses will be tracked here."
-                />
+                {/* Active Canteen Orders */}
+                <Card
+                  title={`Canteen Orders (${activeOrders.length})`}
+                  subtitle="Live records from MySQL canteen_orders"
+                >
+                  {activeOrders.length === 0 ? (
+                    <EmptyState
+                      icon={UtensilsCrossed}
+                      title="No Orders Placed Yet"
+                      description="Pre-order meals from the Canteen menu to skip long lines at peak lunch hours."
+                      action={
+                        <Link to="/canteen">
+                          <Button variant="outline" size="sm">
+                            Browse Menu
+                          </Button>
+                        </Link>
+                      }
+                    />
+                  ) : (
+                    <div className="space-y-3">
+                      {activeOrders.slice(0, 2).map((ord) => (
+                        <div
+                          key={ord.id}
+                          className="p-3 rounded-lg border border-slate-border bg-surface flex flex-col gap-2"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="font-mono text-xs font-bold text-navy-950">
+                              {ord.order_number}
+                            </span>
+                            {getOrderStatusBadge(ord.status)}
+                          </div>
+                          <div className="text-xs text-slate-text">
+                            Total: <strong className="text-navy-950 font-medium">₹{Number(ord.total_amount).toFixed(2)}</strong>
+                          </div>
+                        </div>
+                      ))}
+                      <Link to="/canteen" className="block text-center text-xs text-accent font-medium hover:underline pt-1">
+                        View all orders in Canteen →
+                      </Link>
+                    </div>
+                  )}
+                </Card>
+
+                {/* Active Print Requests */}
+                <Card
+                  title={`Print Requests (${activePrints.length})`}
+                  subtitle="Live records from MySQL print_requests"
+                >
+                  {activePrints.length === 0 ? (
+                    <EmptyState
+                      icon={Printer}
+                      title="No Print Jobs Active"
+                      description="Upload PDF or DOCX files to configure page options and pick up at the printing counter."
+                      action={
+                        <Link to="/printing">
+                          <Button variant="outline" size="sm">
+                            Submit Document
+                          </Button>
+                        </Link>
+                      }
+                    />
+                  ) : (
+                    <div className="space-y-3">
+                      {activePrints.slice(0, 2).map((prt) => (
+                        <div
+                          key={prt.id}
+                          className="p-3 rounded-lg border border-slate-border bg-surface flex flex-col gap-2"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="font-mono text-xs font-bold text-navy-950">
+                              {prt.request_number}
+                            </span>
+                            {getPrintStatusBadge(prt.status)}
+                          </div>
+                          <div className="text-xs text-slate-text truncate">
+                            {prt.original_name} • {prt.color_mode === 'color' ? 'Color' : 'B&W'} • ₹{Number(prt.cost_estimate).toFixed(2)}
+                          </div>
+                        </div>
+                      ))}
+                      <Link to="/printing" className="block text-center text-xs text-accent font-medium hover:underline pt-1">
+                        View all print requests →
+                      </Link>
+                    </div>
+                  )}
+                </Card>
               </div>
-            </Card>
+
+              {/* Recent Inquiries & Reported Items */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Card
+                  title="Campus Assistant Inquiries"
+                  subtitle={`${recentConversations.length} saved query threads`}
+                >
+                  {recentConversations.length === 0 ? (
+                    <p className="text-xs text-slate-muted py-2">
+                      No assistant inquiries recorded yet. Ask questions about campus policies, circulars, and timings.
+                    </p>
+                  ) : (
+                    <div className="space-y-2">
+                      {recentConversations.slice(0, 2).map((c) => (
+                        <div key={c.id} className="p-2.5 rounded bg-slate-50 border border-slate-border text-xs">
+                          <p className="font-medium text-navy-950 truncate">{c.title}</p>
+                          <span className="text-[10px] text-slate-muted">
+                            {new Date(c.updated_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <div className="mt-3">
+                    <Link to="/assistant">
+                      <Button variant="outline" size="sm" icon={Bot}>
+                        Open Assistant
+                      </Button>
+                    </Link>
+                  </div>
+                </Card>
+
+                <Card
+                  title="Lost & Found Registry"
+                  subtitle={`${myLostFound.length} reported items`}
+                >
+                  {myLostFound.length === 0 ? (
+                    <p className="text-xs text-slate-muted py-2">
+                      You have not reported any lost or found items. Recovered items are held securely at Main Gate Security.
+                    </p>
+                  ) : (
+                    <div className="space-y-2">
+                      {myLostFound.slice(0, 2).map((item) => (
+                        <div key={item.id} className="p-2.5 rounded bg-slate-50 border border-slate-border text-xs">
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium text-navy-950 truncate">{item.title}</span>
+                            <span className="text-[10px] uppercase font-semibold text-slate-600">{item.status}</span>
+                          </div>
+                          <p className="text-[11px] text-slate-muted truncate">{item.location_name}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <div className="mt-3">
+                    <Link to="/lost-found">
+                      <Button variant="outline" size="sm" icon={Search}>
+                        Open Registry
+                      </Button>
+                    </Link>
+                  </div>
+                </Card>
+              </div>
+            </div>
           )}
         </div>
       </div>

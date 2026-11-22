@@ -5,6 +5,8 @@ import healthRoutes from './healthRoutes.js';
 import canteenRoutes from './canteenRoutes.js';
 import printingRoutes from './printingRoutes.js';
 import locationRoutes from './locationRoutes.js';
+import lostFoundRoutes from './lostFoundRoutes.js';
+import assistantRoutes from './assistantRoutes.js';
 
 const router = Router();
 
@@ -15,5 +17,7 @@ router.use('/health', healthRoutes);
 router.use('/canteen', canteenRoutes);
 router.use('/printing', printingRoutes);
 router.use('/locations', locationRoutes);
+router.use('/lost-found', lostFoundRoutes);
+router.use('/assistant', assistantRoutes);
 
 export default router;

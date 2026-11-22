@@ -1,0 +1,148 @@
+[
+  {
+    "id": "kb_lib_01",
+    "category": "library",
+    "title": "Central Library Working Hours & Timings",
+    "source": "Central Library Regulation Manual §4.1 (Rev. 2026)",
+    "keywords": ["library", "hours", "timing", "open", "close", "weekend", "sunday", "saturday", "reading room", "night"],
+    "summary": "Central Library general hours are 8:00 AM to 10:00 PM Monday through Friday, and 9:00 AM to 6:00 PM on Saturdays and Sundays. The Ground Floor 24/7 Reading Room remains open continuously throughout mid-semester and end-semester examination periods.",
+    "key_points": [
+      "Monday - Friday: 8:00 AM - 10:00 PM",
+      "Saturday - Sunday: 9:00 AM - 6:00 PM",
+      "Reading Room: 24/7 during scheduled examination weeks",
+      "Closed on designated National Holidays"
+    ]
+  },
+  {
+    "id": "kb_lib_02",
+    "category": "library",
+    "title": "Library Book Borrowing & Late Return Regulations",
+    "source": "Central Library Regulation Manual §4.2 (Rev. 2026)",
+    "keywords": ["library", "borrow", "issue", "books", "return", "fine", "late", "quota", "reference", "overnight"],
+    "summary": "Undergraduate students can borrow up to 3 books for 14 calendar days. Postgraduate students may borrow up to 5 books for 30 calendar days. Overdue fines are ₹2.00 per day per book. Reference section books cannot be checked out for daytime use; overnight issue is permitted after 5:00 PM with mandatory return by 9:00 AM the following working day.",
+    "key_points": [
+      "Undergraduate: 3 books for 14 calendar days",
+      "Postgraduate: 5 books for 30 calendar days",
+      "Overdue fine: ₹2.00 per book per calendar day",
+      "Reference books: Overnight issue after 5:00 PM, return by 9:00 AM next morning",
+      "Book renewal permitted once if no active reservation exists"
+    ]
+  },
+  {
+    "id": "kb_acad_01",
+    "category": "academics",
+    "title": "Academic Section & Registrar Counter Timings",
+    "source": "University Administrative Directory §2.1",
+    "keywords": ["academic", "registrar", "counter", "timing", "hours", "certificates", "transcript", "bonafide", "admin block"],
+    "summary": "The Academic Section counter is situated on the Ground Floor of the Administrative Block (Room 104). Student inquiry counter timings are 10:00 AM to 1:00 PM and 2:30 PM to 4:30 PM on weekdays (Monday through Friday). Closed on weekends and official university holidays.",
+    "key_points": [
+      "Location: Administrative Block, Ground Floor, Room 104",
+      "Morning Window: 10:00 AM - 1:00 PM (Mon-Fri)",
+      "Afternoon Window: 2:30 PM - 4:30 PM (Mon-Fri)",
+      "Bonafide certificate processing time: 2 working days"
+    ]
+  },
+  {
+    "id": "kb_acad_02",
+    "category": "academics",
+    "title": "Semester Examination Revaluation Procedure",
+    "source": "Academic Ordinance §12.3 & Circular 2026/04",
+    "keywords": ["exam", "revaluation", "rechecking", "grades", "marks", "deadline", "fee", "cash counter", "result"],
+    "summary": "Students seeking paper revaluation or answer script inspection must apply through the student portal within 7 calendar days of grade publication. A fee of ₹500 per subject must be remitted at the Finance Cash Counter (Administrative Block, Room 102), and the physical payment receipt must be deposited at the Academic Section counter.",
+    "key_points": [
+      "Application window: Within 7 calendar days of official grade publication",
+      "Revaluation fee: ₹500 per theory subject",
+      "Payment: Administrative Block Room 102 (Cash Counter)",
+      "Revaluation outcomes are final and communicated within 21 working days"
+    ]
+  },
+  {
+    "id": "kb_hostel_01",
+    "category": "hostel",
+    "title": "Hostel In-Time Curfew & Night-Out Pass Procedure",
+    "source": "Hostel Residential Code §7.1 & Safety Circular 2026/02",
+    "keywords": ["hostel", "curfew", "in-time", "gate", "night out", "leave", "permission", "warden", "late entry"],
+    "summary": "Campus hostel curfew is strictly 10:00 PM for all residential students. Entry after 10:00 PM requires mandatory entry in the Security Register and formal notification to the Block Warden. Night-out leave passes must be submitted at least 24 hours in advance via the hostel portal with registered guardian confirmation.",
+    "key_points": [
+      "Main gate curfew: 10:00 PM daily",
+      "Late entry: Mandatory log with security desk and warden alert",
+      "Night-out pass: Requires 24-hour advance submission and guardian verification",
+      "Continuous absence without leave exceeding 48 hours is subject to disciplinary review"
+    ]
+  },
+  {
+    "id": "kb_print_01",
+    "category": "printing",
+    "title": "Campus Xerox & Printing Center Timings and Rates",
+    "source": "Campus Service Center Rate Card 2026",
+    "keywords": ["print", "printing", "xerox", "photocopy", "rates", "cost", "price", "spiral", "binding", "library basement"],
+    "summary": "The Central Printing Hub operates from the Central Library Basement (Counter 1) and Science Block Ground Floor (Counter 2) from 9:00 AM to 7:00 PM Monday through Saturday. Official rates: Black & White is ₹1.00 per side/page, Color is ₹5.00 per page, and Soft Spiral Binding is ₹25.00 per document.",
+    "key_points": [
+      "Locations: Central Library Basement (Counter 1) & Science Block (Counter 2)",
+      "Timings: 9:00 AM - 7:00 PM (Monday to Saturday)",
+      "B&W Rate: ₹1.00 per page",
+      "Color Rate: ₹5.00 per page",
+      "Spiral Binding: ₹25.00 flat rate",
+      "Accepted digital formats: PDF and DOCX up to 10MB"
+    ]
+  },
+  {
+    "id": "kb_canteen_01",
+    "category": "canteen",
+    "title": "Central Canteen Timings & Pre-order Meal Pickup",
+    "source": "Campus Hospitality & Dining Manual 2026",
+    "keywords": ["canteen", "cafeteria", "food", "timing", "breakfast", "lunch", "dinner", "snacks", "order", "pickup"],
+    "summary": "The Central Canteen operates from 8:00 AM to 9:00 PM daily. Meal service schedule: Breakfast 8:00 AM - 10:30 AM, Lunch 12:00 PM - 3:00 PM, Evening Snacks 4:30 PM - 7:00 PM, and Dinner 7:30 PM - 9:00 PM. Digital pre-orders placed via UniMate can be collected directly from the designated Fast Track Counter upon receiving a 'Ready' notification.",
+    "key_points": [
+      "Operating hours: 8:00 AM - 9:00 PM daily",
+      "Breakfast: 8:00 AM - 10:30 AM",
+      "Lunch: 12:00 PM - 3:00 PM",
+      "Evening Snacks: 4:30 PM - 7:00 PM",
+      "Dinner: 7:30 PM - 9:00 PM",
+      "Pre-order pickup: Dedicated Fast Track Counter (Window 3)"
+    ]
+  },
+  {
+    "id": "kb_lost_01",
+    "category": "lost_found",
+    "title": "Lost and Found Claims & Security Desk Protocol",
+    "source": "Campus Security Standard Operating Procedure SOP-09",
+    "keywords": ["lost", "found", "claim", "security", "belonging", "id card", "laptop", "phone", "wallet", "main gate"],
+    "summary": "Recovered items are deposited at the Campus Security Central Desk situated at Main Gate Security Cabin. To claim an item, students must present a valid university ID card, describe specific identifying marks or serial numbers, or unlock electronic devices in the presence of the Duty Security Officer. Items are securely held for 60 calendar days.",
+    "key_points": [
+      "Primary repository: Main Gate Security Cabin Central Desk",
+      "Verification: University ID card + specific identifying proof/marks",
+      "Electronics: Device must be powered on and unlocked in person",
+      "Holding period: 60 calendar days prior to institutional disposition",
+      "Operational for claims: 9:00 AM - 6:00 PM daily"
+    ]
+  },
+  {
+    "id": "kb_health_01",
+    "category": "health",
+    "title": "Campus Health Centre Timings & Emergency Services",
+    "source": "Campus Health Centre Directory 2026",
+    "keywords": ["health", "medical", "doctor", "hospital", "clinic", "emergency", "ambulance", "medicine", "amenity"],
+    "summary": "The Campus Health Centre is situated on the Ground Floor of the Student Amenity Complex. Emergency first-aid and ambulance dispatch are available 24/7. Outpatient physician consultation is available Monday to Saturday: Morning 9:00 AM - 1:00 PM and Evening 4:00 PM - 7:00 PM. Emergency intercom extension: 108.",
+    "key_points": [
+      "Location: Student Amenity Complex, Ground Floor",
+      "Emergency & First-Aid: 24 hours / 7 days",
+      "Doctor OPD: 9:00 AM - 1:00 PM & 4:00 PM - 7:00 PM (Mon-Sat)",
+      "Emergency Intercom: Ext. 108"
+    ]
+  },
+  {
+    "id": "kb_admin_01",
+    "category": "administration",
+    "title": "Dean of Student Affairs (DoSA) Office Hours & Scope",
+    "source": "University Administrative Directory §3.4",
+    "keywords": ["dean", "student affairs", "dosa", "clubs", "permission", "concession", "grievance", "admin block"],
+    "summary": "The Office of the Dean of Student Affairs (DoSA) is located on the Second Floor of the Administrative Block (Room 210). Student meeting hours are 2:00 PM to 5:00 PM from Monday to Friday. DoSA oversees registered student societies, campus events, hostel escalation disputes, and institutional welfare matters.",
+    "key_points": [
+      "Location: Administrative Block, 2nd Floor, Room 210",
+      "Visiting Hours: 2:00 PM - 5:00 PM (Monday through Friday)",
+      "Scope: Student clubs, event approvals, welfare and grievances",
+      "Appointment scheduling: Via DoSA office counter or official desk"
+    ]
+  }
+]
