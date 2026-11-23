@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
 import PageHeader from '../../components/common/PageHeader';
 import Card from '../../components/common/Card';
 import Badge from '../../components/common/Badge';
 import Button from '../../components/common/Button';
+import api from '../../services/api';
 import {
   Bot,
   Send,
@@ -20,8 +20,6 @@ import {
   RefreshCw,
   Info
 } from 'lucide-react';
-
-const API_BASE = '/api/v1';
 
 export default function AssistantPage() {
   const [conversations, setConversations] = useState([]);
@@ -77,7 +75,7 @@ export default function AssistantPage() {
     try {
       setLoading(true);
       setError(null);
-      const res = await axios.get(`${API_BASE}/assistant/conversations`);
+      const res = await api.get('/assistant/conversations');
       const convList = res.data?.data?.conversations || [];
       setConversations(convList);
       if (convList.length > 0 && !activeConversationId) {
@@ -94,7 +92,7 @@ export default function AssistantPage() {
   const fetchConversationDetails = async (id) => {
     try {
       setError(null);
-      const res = await axios.get(`${API_BASE}/assistant/conversations/${id}`);
+      const res = await api.get(`/assistant/conversations/${id}`);
       setActiveConversation(res.data?.data?.conversation || null);
       setMessages(res.data?.data?.messages || []);
       setSuggestedFollowups([]);
@@ -107,7 +105,7 @@ export default function AssistantPage() {
   const handleCreateNewConversation = async (initialQuery = null) => {
     try {
       setError(null);
-      const res = await axios.post(`${API_BASE}/assistant/conversations`, {
+      const res = await api.post('/assistant/conversations', {
         title: initialQuery ? (initialQuery.length > 30 ? initialQuery.substring(0, 27) + '...' : initialQuery) : 'New Campus Inquiry'
       });
       const newConv = res.data?.data?.conversation;
@@ -132,7 +130,7 @@ export default function AssistantPage() {
     if (!window.confirm('Are you sure you want to delete this inquiry thread?')) return;
 
     try {
-      await axios.delete(`${API_BASE}/assistant/conversations/${convId}`);
+      await api.delete(`/assistant/conversations/${convId}`);
       const remaining = conversations.filter((c) => c.id !== convId);
       setConversations(remaining);
       if (activeConversationId === convId) {
@@ -176,7 +174,7 @@ export default function AssistantPage() {
     setError(null);
 
     try {
-      const res = await axios.post(`${API_BASE}/assistant/conversations/${convId}/messages`, {
+      const res = await api.post(`/assistant/conversations/${convId}/messages`, {
         content: textToSend.trim(),
       });
 
@@ -192,7 +190,7 @@ export default function AssistantPage() {
       }
 
       // Refresh list to update conversation title and updated_at
-      const listRes = await axios.get(`${API_BASE}/assistant/conversations`);
+      const listRes = await api.get('/assistant/conversations');
       setConversations(listRes.data?.data?.conversations || []);
     } catch (err) {
       console.error('Error sending query:', err);
